@@ -24,7 +24,6 @@ int main() {
     cout.tie(nullptr);
 
     init();
-    long long ans = pow(2,n)-1;
-    cout << ans << "\n";
+    cout << (1 << n) - 1 << "\n";
     solve(n, 1, 3);
 }
