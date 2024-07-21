@@ -3,7 +3,6 @@
 using namespace std;
 
 int n;
-int cnt;
 
 void init() {
     cin >> n;
@@ -11,16 +10,11 @@ void init() {
 
 void solve(int c, int s, int d) {
     if (c == 1) {
-        cout << s << " " << d;
-        cnt++;
-        if (cnt < pow(2, n) - 1) {
-            cout << '\n';
-        }
+        cout << s << " " << d << '\n';
         return;
     }
     solve(c - 1, s, 6 - s - d);
     cout << s << " " << d << '\n';
-    cnt++;
     solve(c - 1, 6 - s - d, d);
 }
 
