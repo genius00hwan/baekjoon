@@ -4,7 +4,6 @@ using namespace std;
 int n;
 vector<int> nums;
 vector<int> sums;
-int ans;
 
 void init() {
     cin >> n;
@@ -23,16 +22,17 @@ void solve() {
             sums.push_back(nums[i] + nums[j]);
         }
     }
-    
     sort(sums.begin(), sums.end());
-    
+
     for (int i = nums.size() - 1; i >= 0; i--) {
         for (int j = 0; j < i; j++) {
-            if (binary_search(sums.begin(), sums.end(), nums[i] - nums[j]))
-                ans = max(ans, nums[i]);
+            if (binary_search(sums.begin(), sums.end(), nums[i] - nums[j])) {
+                cout << nums[i];
+                return;
+            }
+
         }
     }
-    cout << ans;
 }
 
 int main() {
