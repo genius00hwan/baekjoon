@@ -1,11 +1,28 @@
+
+
+
 #include <bits/stdc++.h>
 
 using namespace std;
 
 int n, m;
 vector<int> arr;
-vector<int> qs;
-bool chk[100000];
+
+bool bs(int num) {
+    int s = 0;
+    int e = arr.size();
+
+    while (s < e) {
+        int mid = (s + e) / 2;
+        if (num == arr[mid])
+            return true;
+
+        if (num < arr[mid]) e = mid;
+        else s = mid + 1;
+
+    }
+    return false;
+}
 
 void init() {
     cin >> n;
@@ -14,41 +31,17 @@ void init() {
         cin >> a;
         arr.push_back(a);
     }
+    sort(arr.begin(), arr.end());
+
+}
+
+void solve() {
     cin >> m;
     while (m--) {
         int a;
         cin >> a;
-        qs.push_back(a);
+        cout << bs(a) << '\n';
     }
-    sort(arr.begin(), arr.end());
-}
-
-bool bs(int v,int s, int e) {
-    int m = (s + e) / 2 ;
-    if(chk[m])
-        m++;
-    if(chk[m])
-        return false;
-    chk[m] = true;
-    if (m >= arr.size())
-        return false;
-    if (m < 0)
-        return false;
-    if (arr[m] == v)
-        return true;
-    if (v < arr[m])
-        return bs(v, s, m);
-    if (v > arr[m])
-        return bs(v, m, e);
-    return false;
-}
-
-void solve() {
-    for (int q: qs) {
-        cout << bs(q, 0, arr.size()) << '\n';
-        memset(chk,0,sizeof(chk));
-    }
-
 }
 
 int main() {
