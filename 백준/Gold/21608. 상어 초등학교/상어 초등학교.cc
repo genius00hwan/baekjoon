@@ -84,12 +84,6 @@ void setSeat(student st) {
     }
     seat se = pq.top();
     st.pn = se.pc;
-//    cout << st.num << ":" << se.r << ',' << se.c << endl;
-    while (!pq.empty()) {
-        seat tmp = pq.top();
-//        cout <<"   " <<tmp.r << ',' << tmp.c << ": like " << tmp.pc << ", empty " << tmp.ec << endl;
-        pq.pop();
-    }
     graph[se.r][se.c] = st;
     for (int i = 0; i < 4; i++) {
         int nr = se.r + dr[i];
