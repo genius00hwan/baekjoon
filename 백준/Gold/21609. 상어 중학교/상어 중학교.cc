@@ -32,20 +32,8 @@ struct compare {
     }
 };
 
-void print() {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (graph[i][j] == -2)cout << "x ";
-            else cout << graph[i][j] << ' ';
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
 bool oob(int r, int c) {
-    if (r < 0 || r >= n || c < 0 || c >= n)return true;
-    return false;
+    return (r < 0 || r >= n || c < 0 || c >= n);
 }
 
 void rotate() {
@@ -167,19 +155,16 @@ void play() {
     bg f = groups.top();
     ans += f.bn * f.bn;
     erase(f);
-//    print();
 
     for (int j = 0; j < n; j++) {
         gravity(j);
     }
-//    print();
 
     rotate();
 
     for (int j = 0; j < n; j++) {
         gravity(j);
     }
-//    print();
 
 }
 
