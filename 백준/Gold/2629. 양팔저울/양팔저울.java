@@ -41,9 +41,9 @@ public class Main {
         }
         mem[idx][val] = true;
 
-        dp(idx + 1, val);
         dp(idx + 1, val + arr[idx]);
         dp(idx + 1, abs(val - arr[idx]));
+                dp(idx + 1, val);
     }
 
     public static void solve() {
