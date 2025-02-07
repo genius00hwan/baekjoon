@@ -1,8 +1,5 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 
 public class Main {
@@ -21,21 +18,21 @@ public class Main {
     }
 
 
-    public static void init() {
-        Scanner sc = new Scanner(System.in);
-        n = sc.nextInt();
+    public static void init() throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
         int start, end;
-        pq = new PriorityQueue<>(new Comparator<meeting>() {
-            public int compare(meeting o1, meeting o2) {
-                if (o1.end == o2.end) {
-                    return Integer.compare(o1.start, o2.start);
-                }
-                return Integer.compare(o1.end, o2.end);
+
+        pq = new PriorityQueue<>((o1, o2) -> {
+            if (o1.end == o2.end) {
+                return Integer.compare(o1.start, o2.start);
             }
+            return Integer.compare(o1.end, o2.end);
         });
         for (int i = 0; i < n; i++) {
-            start = sc.nextInt();
-            end = sc.nextInt();
+            String[] input = br.readLine().split(" ");
+            start = Integer.parseInt(input[0]);
+            end = Integer.parseInt(input[1]);
             pq.offer(new meeting(start, end));
         }
 
@@ -46,7 +43,7 @@ public class Main {
         int ans = 0;
         meeting tmp = new meeting(-1, -1);
 
-        while (!pq.isEmpty()){
+        while (!pq.isEmpty()) {
             meeting m = pq.poll();
             if (m.start < tmp.end) {
                 continue;
@@ -58,7 +55,7 @@ public class Main {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         init();
         solve();
     }
