@@ -5,22 +5,12 @@ using namespace std;
 #define MOD 10'007
 
 int n;
-int ans = 1;
 
-void solve() {
-    if (n <= 3) {
-        cout << n;
-        return;
+int solve(int v, int ans) {
+    if (v <= 4) {
+        return v * ans % MOD;
     }
-
-    while (n > 4) {
-        n -= 3;
-        ans *= 3;
-        ans %= MOD;
-    }
-    ans *= n;
-    ans %= MOD;
-    cout << ans;
+    return solve(v - 3, ans * 3 % MOD);
 }
 
 int main() {
@@ -29,5 +19,5 @@ int main() {
     cout.tie(nullptr);
 
     cin >> n;
-    solve();
+    cout << solve(n,1);
 }
