@@ -1,49 +1,48 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define INF 500'001
+#define INF 1e9
+#define MAX 51
 
-vector<pair<int,int>> edges[51]; // 인덱스: src, first: dest, second: dist
-int distList[51]; // 0번으로 부터의 거리
-priority_queue<pair<int,int>> pq; // 거리, dest
-bool chk[51];
 int ans;
+struct edge{
+    int dest;
+    int dist;
+};
+struct cmp{
+    bool operator()(edge e1,edge e2){
+        return e1.dist < e2.dist;
+    }
+};
+vector<edge> edges[MAX]; // 목적지, 거리
+priority_queue<edge,vector<edge>,cmp>pq;
+int v[MAX];
 
 int solution(int n, vector<vector<int>> road, int k) {
-    
     // init
-    for(int i=0;i<road.size();i++){
-        vector<int> iter = road[i];
-        edges[iter[0]-1].emplace_back(iter[1]-1,iter[2]);
-        edges[iter[1]-1].emplace_back(iter[0]-1,iter[2]);
+    for(auto e : road){
+        edges[e[0]-1].push_back({e[1]-1,e[2]});
+        edges[e[1]-1].push_back({e[0]-1,e[2]});
     }
-    
-    for(int i=0;i<n;i++){
-        distList[i] = INF;
+    for(int i=1;i<n;i++){
+        v[i] = INF;
     }
+    v[0]=0;
     pq.push({0,0});
     
-    // solve
+    // sol
     while(!pq.empty()){
-        pair<int,int> cur = pq.top();
+        edge cur = pq.top();
         pq.pop();
-        int dist = cur.first;
-        int dest = cur.second;
-
-        distList[dest] = dist;
-        
-        for(pair<int,int> next : edges[dest]){
-            if(dist + next.second > distList[next.first]) continue;
-            pq.push(make_pair(dist + next.second, next.first));
+        for(edge  e : edges[cur.dest]){
+            if(v[e.dest] <= cur.dist + e.dist) continue;
+            v[e.dest] = cur.dist + e.dist;
+            pq.push({e.dest,cur.dist + e.dist});
         }
     }
     
-    // for(int i=0;i<n;i++){
-    //     cout << distList[i] << ' ';
-    // }cout << endl;
     for(int i=0;i<n;i++){
-        if(distList[i]<=k)ans++;
+        ans += (v[i]<=k);
     }
-    
     return ans;
 }
