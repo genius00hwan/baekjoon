@@ -18,18 +18,12 @@ void init() {
 
 void solve() {
     for (int i = 1; i <= n; i++) {
-        int w = items[i].first;
-        int v = items[i].second;
         for (int j = 1; j <= k; j++) {
-            if (j >= w) {
-                mem[i][j] = max(mem[i - 1][j], v + mem[i-1][j - w]);
-                continue;
-            }
-            mem[i][j] = mem[i - 1][j];
+            mem[i][j] = (j < items[i].first) ? mem[i - 1][j] : max(mem[i - 1][j],items[i].second + mem[i - 1][j - items[i].first]);
         }
     }
 
-    cout << mem[n ][k] << '\n';
+    cout << mem[n][k] << '\n';
 }
 
 int main() {
