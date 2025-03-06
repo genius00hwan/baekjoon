@@ -2,84 +2,105 @@
 
 using namespace std;
 
-int dr[] = {-1, -1, 0, 1, 1, 1, 0, -1};
-int dc[] = {0, 1, 1, 1, 0, -1, -1, -1};
-int N, M, K;
+#define MAX 51
 
-struct fire {
-    int m;
-    int s;
-    int d;
+int N, M, K;
+int rd[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
+int cd[8] = {0, 1, 1, 1, 0, -1, -1, -1};
+
+int mod(int x) {
+    int y = x % N;
+    return y < 0 ? y + N : y;
+}
+
+struct fb {
+    int dir;
+    int mass;
+    int speed;
 };
-int ans;
+
 
 struct node {
-    queue<fire> sq;
-    queue<fire> dq;
+    queue<fb> readyQ;
+    vector<fb> arrived;
 };
-node graph[52][52];
+
+node graph[MAX][MAX];
+
+void shoot(int r, int c) {
+    node *node = &graph[r][c];
+    while (!node->readyQ.empty()) {
+        fb cur = node->readyQ.front();
+        node->readyQ.pop();
+        int nr = mod(r + (rd[cur.dir] * cur.speed));
+        int nc = mod(c + (cd[cur.dir] * cur.speed));
+        graph[nr][nc].arrived.push_back(cur);
+    }
+}
+
+void split(int r, int c) {
+    node *node = &graph[r][c];
+    if (node->arrived.empty())return;
+    if (node->arrived.size() == 1) {
+        node->readyQ.push(graph[r][c].arrived[0]);
+        node->arrived.clear();
+        return;
+    }
+    int m = 0;
+    int s = 0;
+    bool isEven = false, isOdd = false;
+    for (fb cur: node->arrived) {
+        m += cur.mass;
+        s += cur.speed;
+        if (cur.dir % 2 == 0) isEven = true;
+        else isOdd = true;
+    }
+    m /= 5;
+    s /= node->arrived.size();
+    node->arrived.clear();
+
+    int dir = (isEven ^ isOdd) ? 0 : 1;
+    if (!m)return;
+    
+    for (int d = dir; d < 8; d += 2) {
+        node->readyQ.push({d, m, s});
+    }
+}
+//void debug() {
+//    for (int i = 0; i < N; i++) {
+//        for (int j = 0; j < N; j++) {
+//            cout<<'{';
+//            for(fb cur : graph[i][j].arrived){
+//                cout << '(' << cur.mass << "," << cur.speed << ',' << cur.dir << "),";
+//            }
+//            cout <<"} ";
+//        }
+//        cout << endl;
+//    }
+//    cout << endl;
+//}
+
+int count() {
+    int ret = 0;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            while (!graph[i][j].readyQ.empty()) {
+                ret += graph[i][j].readyQ.front().mass;
+                graph[i][j].readyQ.pop();
+            }
+        }
+    }
+    return ret;
+}
 
 void init() {
     cin >> N >> M >> K;
-    for (int i = 0; i < M; i++) {
+    while (M--) {
         int r, c, m, s, d;
         cin >> r >> c >> m >> s >> d;
-        graph[r - 1][c - 1].sq.push({m, s, d});
+        graph[r - 1][c - 1].readyQ.push({d, m, s});
     }
 }
-
-void shoot(int r, int c) {
-    while (!graph[r][c].sq.empty()) {
-        fire f = graph[r][c].sq.front();
-        graph[r][c].sq.pop();
-        int nr = r + dr[f.d] * f.s;
-        while (nr < 0) {
-            nr += N;
-        }
-        nr %= N;
-
-        int nc = c + dc[f.d] * f.s;
-        while (nc < 0) {
-            nc += N;
-        }
-        nc %= N;
-
-        graph[nr][nc].dq.push(f);
-    }
-}
-
-void sumAndDiv(int r, int c) {
-    if (graph[r][c].dq.empty())return;
-    if (graph[r][c].dq.size() == 1) {
-        graph[r][c].sq.push(graph[r][c].dq.front());
-        graph[r][c].dq.pop();
-        return;
-    }
-    int fn = graph[r][c].dq.size();
-    fire f = graph[r][c].dq.front();
-    graph[r][c].dq.pop();
-    int flag = f.d % 2;
-    while (!graph[r][c].dq.empty()) {
-        f.m += graph[r][c].dq.front().m;
-        f.s += graph[r][c].dq.front().s;
-        if (flag != graph[r][c].dq.front().d % 2)
-            flag = 2;
-        graph[r][c].dq.pop();
-    }
-    if (!(f.m / 5) || !(f.s / fn))
-        return;
-    if (flag == 2) {
-        for (int i = 0; i < 4; i++) {
-            graph[r][c].sq.push({f.m / 5, f.s / fn, 2 * i + 1});
-        }
-        return;
-    }
-    for (int i = 0; i < 4; i++) {
-        graph[r][c].sq.push({f.m / 5, f.s / fn, 2 * i});
-    }
-
-}
-
 
 void solve() {
     while (K--) {
@@ -88,29 +109,20 @@ void solve() {
                 shoot(i, j);
             }
         }
+//    debug();
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                sumAndDiv(i, j);
+                split(i, j);
             }
         }
     }
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            while (!graph[i][j].sq.empty()) {
-                ans += graph[i][j].sq.front().m;
-                graph[i][j].sq.pop();
-            }
-        }
-    }
-
-    cout << ans;
+    cout << count();
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
-
 
     init();
     solve();
