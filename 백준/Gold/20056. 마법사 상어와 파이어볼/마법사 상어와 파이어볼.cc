@@ -48,20 +48,18 @@ void split(int r, int c) {
     }
     int m = 0;
     int s = 0;
-    bool isEven = false, isOdd = false;
+    bool flag = node->arrived[0].dir % 2;
+    int dir = 0;
     for (fb cur: node->arrived) {
         m += cur.mass;
         s += cur.speed;
-        if (cur.dir % 2 == 0) isEven = true;
-        else isOdd = true;
+        dir = dir|(flag ^ (cur.dir % 2));
     }
     m /= 5;
     s /= node->arrived.size();
     node->arrived.clear();
-
-    int dir = (isEven ^ isOdd) ? 0 : 1;
     if (!m)return;
-    
+
     for (int d = dir; d < 8; d += 2) {
         node->readyQ.push({d, m, s});
     }
