@@ -28,10 +28,10 @@ struct node {
 node graph[MAX][MAX];
 
 void shoot(int r, int c) {
-    node *node = &graph[r][c];
-    while (!node->readyQ.empty()) {
-        fb cur = node->readyQ.front();
-        node->readyQ.pop();
+    queue<fb>*q = &graph[r][c].readyQ;
+    while (!q->empty()) {
+        fb cur = q->front();
+        q->pop();
         int nr = mod(r + (rd[cur.dir] * cur.speed));
         int nc = mod(c + (cd[cur.dir] * cur.speed));
         graph[nr][nc].arrived.push_back(cur);
@@ -39,44 +39,30 @@ void shoot(int r, int c) {
 }
 
 void split(int r, int c) {
-    node *node = &graph[r][c];
-    if (node->arrived.empty())return;
-    if (node->arrived.size() == 1) {
-        node->readyQ.push(graph[r][c].arrived[0]);
-        node->arrived.clear();
+    vector<fb>* v = &graph[r][c].arrived;
+    queue<fb>*q = &graph[r][c].readyQ;
+    if (v->empty())return;
+    if (v->size() == 1) {
+        q->push(graph[r][c].arrived[0]);
+        v->clear();
         return;
     }
-    int m = 0;
-    int s = 0;
-    bool flag = node->arrived[0].dir % 2;
-    int dir = 0;
-    for (fb cur: node->arrived) {
+    int m = 0, s = 0, dir = 0;
+    bool flag = (*v)[0].dir % 2;
+    for (fb cur: *v) {
         m += cur.mass;
         s += cur.speed;
-        dir = dir|(flag ^ (cur.dir % 2));
+        dir |= (flag ^ (cur.dir % 2));
     }
     m /= 5;
-    s /= node->arrived.size();
-    node->arrived.clear();
+    s /= v->size();
+    v->clear();
     if (!m)return;
 
     for (int d = dir; d < 8; d += 2) {
-        node->readyQ.push({d, m, s});
+        q->push({d, m, s});
     }
 }
-//void debug() {
-//    for (int i = 0; i < N; i++) {
-//        for (int j = 0; j < N; j++) {
-//            cout<<'{';
-//            for(fb cur : graph[i][j].arrived){
-//                cout << '(' << cur.mass << "," << cur.speed << ',' << cur.dir << "),";
-//            }
-//            cout <<"} ";
-//        }
-//        cout << endl;
-//    }
-//    cout << endl;
-//}
 
 int count() {
     int ret = 0;
@@ -107,7 +93,6 @@ void solve() {
                 shoot(i, j);
             }
         }
-//    debug();
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 split(i, j);
