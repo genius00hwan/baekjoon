@@ -25,9 +25,9 @@ void init() {
     sort(disable.begin(), disable.end());
 }
 
-int cal(int start, int end) {
+int cal(int s, int e) {
     int cost = INT_MAX;
-    for (int i = start; i <= end; i++) {
+    for (int i = s; i <= e; i++) {
         cost = min(cost, rock[i]);
     }
     return cost;
