@@ -42,25 +42,6 @@ int mkdir(int v) {
     return v < 0 ? v + 8 : v;
 }
 
-//void debug() {
-//    for (int i = 0; i < n; i++) {
-//        for (int j = 0; j < n; j++) {
-//            cout << chk[i][j];
-//        }
-//        cout << endl;
-//    }
-//    cout << endl;
-//    for (int i = 0; i < n; i++) {
-//        for (int j = 0; j < n; j++) {
-//            cout << graph[i][j] << " ";
-//        }
-//        cout << endl;
-//    }
-//    cout << ans << endl;
-//    cout <<"-------------" <<endl;
-//    cout << endl;
-//}
-
 void hit(int dir, int r, int c) {
     int sand = graph[r][c];
     graph[r][c] -= sand;
