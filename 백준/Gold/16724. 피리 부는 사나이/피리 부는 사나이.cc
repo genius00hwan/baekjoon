@@ -12,10 +12,6 @@ int mem[MAX][MAX];
 int cnt;
 int n, m;
 
-bool oob(int r, int c) {
-    return (r < 0 || r >= n || c < 0 || c >= m);
-}
-
 int dfs(int r, int c) {
     if (mem[r][c] == -1) {
         return mem[r][c] = ++cnt;
@@ -26,8 +22,6 @@ int dfs(int r, int c) {
     int dir = graph[r][c];
     int nr = r + dr[dir];
     int nc = c + dc[dir];
-    if (oob(nr, nc)) return mem[r][c] = ++cnt;
-
     return mem[r][c] = dfs(nr, nc);
 }
 
