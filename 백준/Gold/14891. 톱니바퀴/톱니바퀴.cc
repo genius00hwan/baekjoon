@@ -54,28 +54,6 @@ void cal_right(int idx, bool dir) {
     chk[idx + 1] = !dir;
     cal_right(idx + 1, !dir);
 }
-
-void debug() {
-    for (int i = 0; i < 8; i++) {
-        cout << i << " ";
-    }
-    cout << endl;
-    for (int i = 0; i < 8; i++) {
-        cout << '-' << " ";
-    }
-    cout << endl;
-    for (const auto &w: wheels) {
-        for (auto v: w) {
-            cout << v << " ";
-        }
-        cout << endl;
-    }
-    for (int i: chk) {
-        cout << i << " ";
-    }
-    cout << endl << endl;
-}
-
 void solve() {
     for (auto c: cmd) {
         memset(chk, -1, sizeof chk);
