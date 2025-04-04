@@ -5,7 +5,6 @@ using namespace std;
 int n, m, k, x; // v개수, e개수, 기준값, 출발노드
 vector<int> edges[N_MAX];
 int dist[N_MAX];
-vector<int> ans;
 
 void init() {
     cin >> n >> m >> k >> x;
@@ -29,21 +28,21 @@ void bfs() {
             if (dist[v] != -1) continue;
             dist[v] = dist[cur] + 1;
             q.push(v);
-            if (dist[v] == k) {
-                ans.push_back(v);
-            }
         }
     }
 }
 
 void solve() {
     bfs();
-    if (ans.empty()) cout << -1;
 
-    std::sort(ans.begin(), ans.end());
-    for (int v : ans) {
-        cout << v << '\n';
+    int cnt = 0;
+    for (int i = 1; i <= n; i++) {
+        if (dist[i] == k) {
+            cout << i << '\n';
+            cnt++;
+        }
     }
+    if (!cnt)cout << -1;
 }
 
 int main() {
