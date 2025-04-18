@@ -1,70 +1,61 @@
-import static java.lang.Math.abs;
-
-import java.util.Scanner;
-
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    public static int n, m;
-    public static int max;
-    public static boolean[][] mem;
-    public static int[] arr;
+    static int[] w;
+    static boolean[][] memo;
+    static int n;
+    static int[] mbs;
+    static int m;
 
-    public static int[] inputs;
-
-    public static void init() {
-        mem = new boolean[31][15001];
-        arr = new int[31];
-
-        Scanner sc = new Scanner(System.in);
-
-        n = sc.nextInt();
-
+    public static void init() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
+        w = new int[31];
+        StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < n; i++) {
-            arr[i] = sc.nextInt();
-            max += arr[i];
+            w[i] = Integer.parseInt(st.nextToken());
         }
-        m = sc.nextInt();
 
-        inputs = new int[m];
+        m = Integer.parseInt(br.readLine());
+        mbs = new int[m];
+        st = new StringTokenizer(br.readLine());
         for (int i = 0; i < m; i++) {
-            inputs[i] = sc.nextInt();
+            mbs[i] = Integer.parseInt(st.nextToken());
         }
+
+        memo = new boolean[31][15001];
     }
 
-    public static void dp(int idx, int val) {
-        if (idx > n) {
+    static void dfs(int i, int v) {
+        if (i > n || memo[i][v]) {
             return;
         }
-        if (mem[idx][val]) {
-            return;
-        }
-        mem[idx][val] = true;
+        memo[i][v] = true;
 
-        dp(idx + 1, val + arr[idx]);
-        dp(idx + 1, abs(val - arr[idx]));
-                dp(idx + 1, val);
+        dfs(i + 1, v); // 사용 X
+        dfs(i + 1, Math.abs(v - w[i])); // 구슬쪽
+        dfs(i + 1, v + w[i]); // 안 구슬쪽
     }
 
     public static void solve() {
-        dp(0, 0);
-
-        for (int i = 0; i < m; i++) {
-            if (inputs[i] > max) {
-                System.out.print("N ");
-                continue;
+        dfs(0, 0);
+        StringBuilder sb = new StringBuilder();
+        for (int x : mbs) {
+            if (x > 15000) {
+                sb.append("N ");
+            } else {
+                sb.append(memo[n][x] ? "Y " : "N ");
             }
-            if (mem[n][inputs[i]]) {
-                System.out.print("Y ");
-                continue;
-            }
-            System.out.print("N ");
         }
+        System.out.println(sb);
     }
 
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         init();
         solve();
     }
 }
+
+
