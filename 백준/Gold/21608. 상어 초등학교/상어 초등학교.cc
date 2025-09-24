@@ -2,123 +2,140 @@
 
 using namespace std;
 
-int dr[] = {0, 0, 1, -1};
-int dc[] = {1, -1, 0, 0};
+
 int n;
+int rd[4] = {0, 0, 1, -1};
+int cd[4] = {1, -1, 0, 0};
+
 struct student {
     int num;
     int prefers[4];
-    int pn;
 };
 
-vector<student> stds;
-student graph[21][21];
-
-int point[5] = {0, 1, 10, 100, 1000};
+bool oob(int r, int c) {
+    return (r < 0 || r >= n || c < 0 || c >= n);
+}
 
 struct seat {
     int r, c;
-    int pc;
-    int ec;
+    int preferNum;
+    int emptyNum;
 
     bool operator()(seat s1, seat s2) {
-        if (s1.pc == s2.pc) {
-            if (s1.ec == s2.ec) {
+        if (s1.preferNum == s2.preferNum) {
+            if (s1.emptyNum == s2.emptyNum) {
                 if (s1.r == s2.r) {
                     return s1.c > s2.c;
                 }
                 return s1.r > s2.r;
             }
-            return s1.ec < s2.ec;
+            return s1.emptyNum < s2.emptyNum;
         }
-        return s1.pc < s2.pc;
+        return s1.preferNum < s2.preferNum;
     }
 };
 
+student classroom[21][21];
 
-bool oob(int r, int c) {
-    if (r < 0 || r >= n || c < 0 || c >= n)return true;
-    return false;
-}
+vector<student> students;
 
 void init() {
     cin >> n;
-    for (int i = 0; i < n * n; i++) {
-        int a;
-        cin >> a;
-        student st = {a};
-        for (int j = 0; j < 4; j++) {
-            cin >> st.prefers[j];
+    int m = n * n;
+    for (int i = 0; i < m; i++) {
+        int sn;
+        cin >> sn;
+        student tmp = {sn};
+        for (int k = 0; k < 4; k++) {
+            cin >> tmp.prefers[k];
         }
-        stds.push_back(st);
+        students.push_back(tmp);
     }
-
 }
 
-seat cntSeat(student st, int r, int c) {
-    seat se = {r, c, 0, 0};
+bool contains(student st, int trg) {
+    for (int arg: st.prefers) {
+        if (arg == trg) {
+            return true;
+        }
+    }
+    return false;
+}
+
+seat scoreSeat(student st, int r, int c) {
+    int numberOfEmptySeats = 0;
+    int numberOfPreferStudents = 0;
     for (int i = 0; i < 4; i++) {
-        int nr = r + dr[i];
-        int nc = c + dc[i];
-
-        if (oob(nc, nr))continue;
-        for (int p: st.prefers) {
-            if (graph[nr][nc].num == p) {
-                se.pc++;
-            }
+        int nr = r + rd[i];
+        int nc = c + cd[i];
+        if (oob(nr, nc))continue;
+        if (!classroom[nr][nc].num) {
+            numberOfEmptySeats++;
+            continue;
         }
-        if (!graph[nr][nc].num) {
-            se.ec++;
+        if (contains(st, classroom[nr][nc].num)) {
+            numberOfPreferStudents++;
         }
     }
-    return se;
+    return {r, c, numberOfPreferStudents, numberOfEmptySeats};
 }
 
-void setSeat(student st) {
+void sit(student st) {
     priority_queue<seat, vector<seat>, seat> pq;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (graph[i][j].num)continue;
-            pq.push(cntSeat(st, i, j));
+            if (classroom[i][j].num) continue;
+            pq.push(scoreSeat(st, i, j));
         }
     }
-    seat se = pq.top();
-    st.pn = se.pc;
-    graph[se.r][se.c] = st;
-    for (int i = 0; i < 4; i++) {
-        int nr = se.r + dr[i];
-        int nc = se.c + dc[i];
-        if (oob(nc, nr))continue;
-        for (int p: graph[nr][nc].prefers) {
-            if (st.num == p) {
-                graph[nr][nc].pn++;
-            }
-        }
-    }
+    seat s = pq.top();
+    classroom[s.r][s.c] = st;
 }
 
-int cntPoint() {
-    int ans = 0;
+int score(int r, int c) {
+    student st = classroom[r][c];
+    int cnt = 0;
+    int points[] = {0,1,10,100,1000};
+    for (int i = 0; i < 4; i++) {
+        int nr = r + rd[i];
+        int nc = c + cd[i];
+        if (oob(nr, nc))continue;
+        if (contains(st, classroom[nr][nc].num))cnt++;
+    }
+    return points[cnt];
+}
+
+int agg() {
+    int totalScore = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            ans += point[graph[i][j].pn];
+            totalScore += score(i, j);
         }
     }
-    return ans;
+    return totalScore;
 }
 
+//void debug() {
+//    for (int i = 0; i < n; i++) {
+//        for (int j = 0; j < n; j++) {
+//            cout << classroom[i][j].num;
+//        }
+//        cout << endl;
+//    }
+//}
+
 void solve() {
-    for (student st: stds) {
-        setSeat(st);
+    for (student st: students) {
+        sit(st);
     }
-    cout << cntPoint();
+    cout << agg();
 }
+
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
-
 
     init();
     solve();
