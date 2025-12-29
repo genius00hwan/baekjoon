@@ -1,4 +1,4 @@
-select count(*) as USERS
+select count(*) as users
 from user_info
 where 
     20 <= age and age <= 29 
