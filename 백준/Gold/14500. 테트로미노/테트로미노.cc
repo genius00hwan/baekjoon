@@ -10,11 +10,8 @@ int ans;
 
 void init() {
     cin >> n >> m;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            cin >> graph[i][j];
-        }
-    }
+    for (int i = 0; i < n; i++)for (int j = 0; j < m; j++)cin >> graph[i][j];
+
 }
 
 bool oob(int r, int c) {
@@ -52,19 +49,19 @@ void solve() {
             if (i == n - 1 && j == m - 1)continue;
             if (i == 0 && j == m - 1)continue;
             if (i == n - 1 && j == 0)continue;
-            int mn = 100001;
-            int sm = graph[i][j];
+            int mini = 100001;
+            int sum = graph[i][j];
             for (int d = 0; d < 4; d++) {
                 int nr = i + dr[d];
                 int nc = j + dc[d];
                 if (oob(nr, nc)) {
-                    mn = 0;
+                    mini = 0;
                     continue;
                 }
-                mn = (min(mn, graph[nr][nc]));
-                sm += graph[nr][nc];
+                mini = (min(mini, graph[nr][nc]));
+                sum += graph[nr][nc];
             }
-            ans = max(ans, sm - mn);
+            ans = max(ans, sum - mini);
         }
     }
     cout << ans;
@@ -73,8 +70,9 @@ void solve() {
 int main() {
     cin.tie(nullptr);
     cout.tie(nullptr);
-    ios::sync_with_stdio(0);
+    ios::sync_with_stdio(false);
     init();
     solve();
+
     return 0;
 }
