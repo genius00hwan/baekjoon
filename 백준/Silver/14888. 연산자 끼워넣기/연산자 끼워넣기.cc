@@ -1,63 +1,52 @@
 #include <bits/stdc++.h>
 
-#define MIN -1'000'000'000
-#define MAX 1'000'000'000
-#define SUM 0
-#define SUB 1
-#define MUL 2
-#define DIV 3
-
 using namespace std;
-int num[13];
-vector<int> oper;
+
+int num[12];
+int op[4];//+,-,*,/
 int n;
-int minAns;
-int maxAns;
+int mini, maxi;
 
 void init() {
     cin >> n;
+    for (int i = 0; i < n; i++) cin >> num[i];
 
-    for (int i = 0; i < n; i++) {
-        cin >> num[i];
-    }
+    for (int i = 0; i < 4; i++)cin >> op[i];
 
-    int op;
-    for (int i = SUM; i <= DIV; i++) {
-        cin >> op;
-
-        while (op--)oper.push_back(i);
-    }
-
-    minAns = MAX;
-    maxAns = MIN;
-
+    mini = INT_MAX;
+    maxi = INT_MIN;
 }
 
-void solve() {
-    do {
-        int cur = num[0];
-        for (int i = 1; i < n; i++) {
-            if (oper[i - 1] == SUM)cur += num[i];
-            if (oper[i - 1] == SUB)cur -= num[i];
-            if (oper[i - 1] == MUL)cur *= num[i];
-            if (oper[i - 1] == DIV)cur /= num[i];
-        }
 
-        minAns = min(minAns, cur);
-        maxAns = max(maxAns, cur);
+void solve(int cur, int idx) {
+    if (idx == n - 1) {
+        mini = min(mini, cur);
+        maxi = max(maxi, cur);
+        return;
+    }
 
-    } while (next_permutation(oper.begin(), oper.end()));
-
-    cout << maxAns << '\n' << minAns;
+    for (int i = 0; i < 4; i++) {
+        if (!op[i])continue;
+        op[i]--;
+        if (i == 0) // +
+            solve(cur + num[idx + 1], idx + 1);
+        else if (i == 1) // -
+            solve(cur - num[idx + 1], idx + 1);
+        else if (i == 2) // *
+            solve(cur * num[idx + 1], idx + 1);
+        else // /
+            solve(cur / num[idx + 1], idx + 1);
+        op[i]++;
+    }
 }
 
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+int main() { 
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+
 
     init();
-    solve();
-
-    return 0;
+    solve(num[0], 0);
+    cout << maxi << '\n' << mini;
 }
