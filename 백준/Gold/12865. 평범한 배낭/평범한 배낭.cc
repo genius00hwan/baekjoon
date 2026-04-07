@@ -1,37 +1,50 @@
 #include <bits/stdc++.h>
 
+#define MX_W 100'002
+#define MX_N 101
+
 using namespace std;
 
-int mem[101][100'002];
-pair<int, int> items[101]; // 무게,가치
+int mem[MX_N][MX_W];
+pair<int, int> items[MX_N];
 int n, k;
+
+int dp(int idx, int w) {
+    if (idx == 0) return 0;
+
+    if (mem[idx][w] != -1) return mem[idx][w];
+
+    mem[idx][w] = dp(idx - 1, w);
+
+    if (w >= items[idx].first) {
+        mem[idx][w] = max(
+                mem[idx][w],
+                items[idx].second + dp(idx - 1, w - items[idx].first)
+        );
+    }
+
+    return mem[idx][w];
+}
 
 void init() {
     cin >> n >> k;
     for (int i = 1; i <= n; i++) {
         int w, v;
         cin >> w >> v;
-        items[i] = make_pair(w, v);
+        items[i] = {w, v};
     }
 
+    memset(mem, -1, sizeof(mem));
 }
 
 void solve() {
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= k; j++) {
-            mem[i][j] = (j < items[i].first) ? mem[i - 1][j] : max(mem[i - 1][j],items[i].second + mem[i - 1][j - items[i].first]);
-        }
-    }
-
-    cout << mem[n][k] << '\n';
+    cout << dp(n, k) << '\n';
 }
 
 int main() {
-
-    ios_base::sync_with_stdio(false);
+    ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    cout.tie(nullptr);
+
     init();
     solve();
-
 }
