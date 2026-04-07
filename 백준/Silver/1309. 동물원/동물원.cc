@@ -1,31 +1,34 @@
 #include <bits/stdc++.h>
 
-#define INF 9901
+#define MOD 9901
+
 using namespace std;
-long long mem[100'001][2];
+
+using ll = long long;
+
+ll mem[100001][2];
 int n;
 
+ll dp(int idx, int st) {
+    if (mem[idx][st] != -1) return mem[idx][st];
 
-void init() {
-    mem[0][0] = 1;
-    mem[0][1] = 3;
-    cin >> n;
-}
-
-void solve() {
-    for (int i = 1; i < n; i++) {
-        mem[i][0] = mem[i - 1][1] % INF;
-        mem[i][1] = (mem[i - 1][1] * 2 + mem[i - 1][0]) % INF;
+    if (idx == 0) {
+        if (st == 0) return mem[idx][st] = 1;
+        return mem[idx][st] = 3;
     }
-    cout << mem[n - 1][1] % INF << endl;
+
+    if (st == 0) {
+        return mem[idx][st] = dp(idx - 1, 1) % MOD;
+    }
+
+    return mem[idx][st] = (dp(idx - 1, 0) + 2 * dp(idx - 1, 1)) % MOD;
 }
 
 int main() {
-    ios_base::sync_with_stdio(false);
+    ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    cout.tie(nullptr);
 
-
-    init();
-    solve();
+    cin >> n;
+    memset(mem, -1, sizeof(mem));
+    cout << dp(n - 1, 1) % MOD << '\n';
 }
