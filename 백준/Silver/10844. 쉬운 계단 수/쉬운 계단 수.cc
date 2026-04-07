@@ -1,44 +1,42 @@
 #include <bits/stdc++.h>
 
-#define MAX 1000000000
+#define MOD 1'000'000'000
 
 using namespace std;
 
-long long stepN[101][10];
-
 int n;
+long long mem[101][10];
 long long ans;
 
+long long dp(int len, int digit) {
+    if (mem[len][digit] != -1) return mem[len][digit];
+
+    if (len == 1) {
+        if (digit == 0) return mem[len][digit] = 0;
+        return mem[len][digit] = 1;
+    }
+
+    if (digit == 0) return mem[len][digit] = dp(len - 1, 1) % MOD;
+    if (digit == 9) return mem[len][digit] = dp(len - 1, 8) % MOD;
+
+    return mem[len][digit] = (dp(len - 1, digit - 1) + dp(len - 1, digit + 1)) % MOD;
+}
+
 void init() {
-    for (int i = 1; i < 10; i++) {
-        stepN[1][i] = 1;
-    }
     cin >> n;
-
-    for (int i = 2; i <= n; i++) {
-        for (int j = 0; j < 10; j++) {
-            if (j == 0) stepN[i][0] = (stepN[i - 1][1]) % MAX;
-            else if (j == 9) stepN[i][9] = (stepN[i - 1][8]) % MAX;
-            else stepN[i][j] = (stepN[i - 1][j - 1] + stepN[i - 1][j + 1]) % MAX;
-        }
-    }
-
+    memset(mem, -1, sizeof(mem));
 }
 
 void solve() {
     for (int i = 0; i < 10; i++) {
-        ans += stepN[n][i];
-        ans %= MAX;
+        ans = (ans + dp(n, i)) % MOD;
     }
     cout << ans;
-
 }
 
 int main() {
-    ios_base::sync_with_stdio(false);
+    ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    cout.tie(nullptr);
-
 
     init();
     solve();
